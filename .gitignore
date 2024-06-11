@@ -1,0 +1,27 @@
+# #input and results
+input_data/
+results/
+data/
+
+# mac specific
+DS_Store/
+
+# virtual env
+venv/
+
+
+
+# input data types
+*.csv
+*.xlsx
+*.xls
+*.txt
+*.json
+*.xml
+*.pyc
+*.cpython-311.pyc
+
+
+# ignore all jupyter notebook checkpoints
+.ipynb_checkpoints
+

@@ -1,2 +1,2 @@
 # uart_com
-UART communication with 
+UART communication with MCU

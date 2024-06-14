@@ -46,11 +46,11 @@ def read_serial_data():
         received_data = ser.readline()
         
         # Check for start and end markers
-        if received_data == b'fffffff1\r\n':
+        if received_data == b'1f\r\n':
             print("Start")
             start = True
             return
-        elif received_data == b'f1ffffff\r\n':
+        elif received_data == b'f1\r\n':
             print("Stop")
             start = False
             return

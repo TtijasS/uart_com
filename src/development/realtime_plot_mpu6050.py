@@ -6,10 +6,12 @@ import struct
 
 # Serial port configuration (adjust as necessary)
 ser = serial.Serial('COM7', 3000000, timeout=1)  # Replace 'COM7' with your serial port
+delimiter = b'\t'
+buffer = bytearray()
 
 # Configuration
-buffer_size = 500  # Number of most recent samples to display
-update_interval = 100  # Update on every 50th new sample
+buffer_size = 1000  # Number of most recent samples to display
+update_interval = 50  # Update on every n-th new sample
 
 # Initialize data buffers
 plot_buffer = np.zeros((buffer_size, 3))
@@ -17,9 +19,9 @@ counter = 0
 
 # Initialize plot
 fig, ax = plt.subplots()
-ln1, = plt.plot([], [], 'r-', label='X-axis')
-ln2, = plt.plot([], [], 'g-', label='Y-axis')
-ln3, = plt.plot([], [], 'b-', label='Z-axis')
+ln1, = plt.plot([], [], 'r-', label='X')
+ln2, = plt.plot([], [], 'g-', label='Y')
+ln3, = plt.plot([], [], 'b-', label='Z')
 
 def init():
     ax.set_xlim(0, buffer_size)
@@ -27,22 +29,22 @@ def init():
     return ln1, ln2, ln3
 
 def read_serial_data():
-    global counter, plot_buffer
+    global counter, plot_buffer, buffer
     new_data = []
-    buffer = b''
 
     while True:
-        buffer += ser.read(ser.in_waiting or 1)
-        if b'\n\r' in buffer:
-            packets = buffer.split(b'\n\r')
+        # buffer += ser.read(ser.in_waiting or 1)
+        buffer.extend(ser.read(ser.in_waiting))
+        if b'\t' in buffer:
+            packets = buffer.split(b'\t')
             for packet in packets[:-1]:
                 if len(packet) == 12:  # 3 floats * 4 bytes per float
                     x, y, z = struct.unpack('fff', packet)  # Unpack floats
                     new_data.append([x, y, z])
                     # print(x,y,z)
-            buffer = packets[-1]
-        
+            buffer = packets[-1]        
         if len(new_data) >= update_interval:
+            # print(new_data[:10])
             break
 
     if len(new_data) > 0:
@@ -62,7 +64,7 @@ def update(frame):
     return ln1, ln2, ln3
 
 ani = FuncAnimation(fig, update, frames=np.arange(0, buffer_size),
-                    init_func=init, blit=True, interval=100)  # Update every 200 ms
+                    init_func=init, blit=True, interval=10)  # Update every x ms
 
 plt.legend()
 plt.xlabel('Sample')

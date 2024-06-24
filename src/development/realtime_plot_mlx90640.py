@@ -34,9 +34,9 @@ def read_data_frame():
             data_bytes = buffer[:4 * 768]
             buffer = buffer[4 * 768:]
             data_list = struct.unpack('f' * 768, data_bytes)
-            if len(data_list) == 768:
-                start = False
-                print("Received frame data:", data_list)
+            # if len(data_list) == 768:
+            start = False
+            #     print("Received frame data:", data_list)
 
 def update_frame(frame):
     read_delimiter()
